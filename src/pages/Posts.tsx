@@ -34,7 +34,6 @@ const Posts = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.nextPage;
     },
-    staleTime: 10 * 1000,
   });
 
   const queryClient = useQueryClient();
@@ -58,6 +57,9 @@ const Posts = () => {
     <ul>
       <div>
         <Link to="/">to front page</Link>
+      </div>
+      <div>
+        <Link to="/posts/filter">to filter page</Link>
       </div>
       <button
         onClick={() =>

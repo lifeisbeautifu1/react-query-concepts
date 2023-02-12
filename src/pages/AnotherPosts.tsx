@@ -17,7 +17,6 @@ const AnotherPosts = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.nextPage;
     },
-    staleTime: 10 * 1000,
   });
 
   if (isLoading) return <div>loading...</div>;
@@ -28,6 +27,9 @@ const AnotherPosts = () => {
     <ul>
       <div>
         <Link to="/posts">to posts page</Link>
+      </div>
+      <div>
+        <Link to="/posts/filter">to filter page</Link>
       </div>
       {data.pages.map((group, i) => (
         <Fragment key={i}>

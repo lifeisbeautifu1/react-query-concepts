@@ -3,10 +3,11 @@ import { Post } from "../types";
 
 axios.defaults.baseURL = "http://localhost:3000";
 
-export const getPosts = async (page: number = 1) => {
+export const getPosts = async (page: number = 1, title: string = "") => {
   const res = await axios.get<Array<Post>>("/posts", {
     params: {
       _page: page,
+      title_like: title,
     },
   });
   const hasNext = page * 10 < parseInt(res.headers["x-total-count"] as string);
