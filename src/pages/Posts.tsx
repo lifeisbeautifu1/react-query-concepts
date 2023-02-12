@@ -5,13 +5,10 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import { Fragment } from "react";
-import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { createPost, getPosts } from "../services/post.service";
 
 const Posts = () => {
-  const [page, setPage] = useState(1);
-
   // const [searchParams] = useSearchParams();
 
   // const page = searchParams.get("_page") || 1;
@@ -24,12 +21,20 @@ const Posts = () => {
   //   keepPreviousData: true,
   // });
 
-  const { data, isLoading, isError, fetchNextPage } = useInfiniteQuery({
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ["posts"],
     queryFn: ({ pageParam }) => getPosts(pageParam),
     getNextPageParam: (lastPage, pages) => {
-      return page;
+      return lastPage.nextPage;
     },
+    staleTime: 10 * 1000,
   });
 
   const queryClient = useQueryClient();
@@ -51,6 +56,9 @@ const Posts = () => {
 
   return (
     <ul>
+      <div>
+        <Link to="/">to front page</Link>
+      </div>
       <button
         onClick={() =>
           mutate({
@@ -65,26 +73,30 @@ const Posts = () => {
       </button>
       {isAddPostLoading && <div>adding post...</div>}
       {isAddPostError && <div>error occured while adding post</div>}
-      {data?.pages?.map((group, i) => (
-        <Fragment key={i}>
-          {group.map((post) => (
-            <li key={post.id}>
-              <Link to={`/posts/${post.id}`}>{post.title}</Link>
-              <p>{post.body}</p>
-            </li>
-          ))}
-        </Fragment>
-      ))}
+      <>
+        {data.pages.map((group, i) => (
+          <Fragment key={i}>
+            {group.data.map((post) => (
+              <li key={post.id}>
+                <Link to={`/posts/${post.id}`}>{post.title}</Link>
+                <p>{post.body}</p>
+              </li>
+            ))}
+          </Fragment>
+        ))}
+      </>
       <div>
         <button
+          disabled={!hasNextPage || isFetchingNextPage}
           onClick={() => {
-            setPage((prev) => Math.min(prev + 1, 3));
-            fetchNextPage({
-              pageParam: Math.min(page + 1, 3),
-            });
+            fetchNextPage();
           }}
         >
-          load more
+          {isFetchingNextPage
+            ? "Loading more..."
+            : hasNextPage
+            ? "Load More"
+            : "Nothing more to load"}
         </button>
       </div>
       {/* <div>
