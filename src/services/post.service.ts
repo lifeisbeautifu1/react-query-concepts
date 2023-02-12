@@ -3,8 +3,12 @@ import { Post } from "../types";
 
 axios.defaults.baseURL = "http://localhost:3000";
 
-export const getPosts = async () => {
-  const { data } = await axios.get<Array<Post>>("/posts");
+export const getPosts = async (page: number | string | null = 1) => {
+  const { data } = await axios.get<Array<Post>>("/posts", {
+    params: {
+      _page: page,
+    },
+  });
   return data;
 };
 
